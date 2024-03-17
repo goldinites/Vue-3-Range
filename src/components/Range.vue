@@ -368,7 +368,8 @@ onMounted(() => {
 
     &-label {
       transform: translate(-50%, -100%);
-      width: max-content;
+      text-align: center;
+      width: max(25px, max-content);
     }
   }
 }

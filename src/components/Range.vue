@@ -1,33 +1,32 @@
 <template>
-  <div>
-    <div
-        class="range"
-        ref="rangeRef"
-        @click="rangeClickHandler"
-    >
-      <div class="range__line"/>
-      <div class="range__value"
-           :style="`
+  <div
+      class="range"
+      :class="{'range--disabled': disabled}"
+      ref="rangeRef"
+      @click="rangeClickHandler"
+  >
+    <div class="range__line"/>
+    <div class="range__line range__line--value"
+         :style="`
               left: ${rangeValueStyles.left}px;
               width: ${rangeValueStyles.width}px;
             `"
-      />
-      <div
-          class="range__thumb range__thumb--left"
-          :style="`left: ${leftThumbPosition}px;`"
-          :class="{'range__thumb--elevated': minValue >= maxValue && lastThumb === 'left'}"
-          @mousedown="leftRangeThumbMouseDownHandler"
-          @touchstart="leftRangeThumbMouseDownHandler"
-      />
-      <div
-          v-if="double"
-          class="range__thumb range__thumb--right"
-          :style="`left: ${rightThumbPosition}px;`"
-          :class="{'range__thumb--elevated': maxValue <= minValue && lastThumb === 'right'}"
-          @mousedown="rightRangeThumbMouseDownHandler"
-          @touchstart="rightRangeThumbMouseDownHandler"
-      />
-    </div>
+    />
+    <div
+        class="range__thumb range__thumb--left"
+        :style="`left: ${leftThumbPosition}px;`"
+        :class="{'range__thumb--elevated': minValue >= maxValue && lastThumb === 'left'}"
+        @mousedown="leftRangeThumbMouseDownHandler"
+        @touchstart="leftRangeThumbMouseDownHandler"
+    />
+    <div
+        v-if="double"
+        class="range__thumb range__thumb--right"
+        :style="`left: ${rightThumbPosition}px;`"
+        :class="{'range__thumb--elevated': maxValue <= minValue && lastThumb === 'right'}"
+        @mousedown="rightRangeThumbMouseDownHandler"
+        @touchstart="rightRangeThumbMouseDownHandler"
+    />
   </div>
 </template>
 
@@ -56,6 +55,14 @@ const props = defineProps({
   double: {
     type: Boolean,
     default: true
+  },
+  clickable: {
+    type: Boolean,
+    default: true
+  },
+  disabled: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -116,6 +123,7 @@ const rangeValueStyles = computed(() => {
     left: 0,
     width: leftThumbPosition.value
   };
+
   const double = {
     left: leftThumbPosition.value,
     width: rightThumbPosition.value - leftThumbPosition.value
@@ -175,33 +183,35 @@ const rightRangeThumbMouseUpHandler = () => {
 }
 
 const rangeClickHandler = (e) => {
-  let nearestThumb;
-  const value = calcRangeValue(e);
+  if (props.clickable) {
+    let nearestThumb;
+    const value = calcRangeValue(e);
 
-  if (value < minValue.value) {
-    nearestThumb = 'left';
-  } else if (value > maxValue.value) {
-    nearestThumb = 'right';
-  } else {
-    const minDiff = value - minValue.value;
-    const maxDiff = maxValue.value - value;
-
-    if (minDiff < maxDiff) {
+    if (value < minValue.value) {
       nearestThumb = 'left';
-    } else if (maxDiff < minDiff) {
+    } else if (value > maxValue.value) {
       nearestThumb = 'right';
-    } else if (maxDiff === minDiff) {
-      nearestThumb = Math.random() > 0.5 ? 'left' : 'right';
+    } else {
+      const minDiff = value - minValue.value;
+      const maxDiff = maxValue.value - value;
+
+      if (minDiff < maxDiff) {
+        nearestThumb = 'left';
+      } else if (maxDiff < minDiff) {
+        nearestThumb = 'right';
+      } else if (maxDiff === minDiff) {
+        nearestThumb = Math.random() > 0.5 ? 'left' : 'right';
+      }
     }
-  }
 
-  if (nearestThumb === 'left' || !props.double) {
-    setMinValue(value);
-  } else {
-    setMaxValue(value);
-  }
+    if (nearestThumb === 'left' || !props.double) {
+      setMinValue(value);
+    } else {
+      setMaxValue(value);
+    }
 
-  emitValues();
+    emitValues();
+  }
 }
 
 const setMinValue = (value) => {
@@ -269,6 +279,19 @@ watch(() => props.maxValue, (value) => {
   setMaxValue(value)
 });
 
+watch(() => props.disabled, (value) => {
+  if (value) {
+    document.removeEventListener('mousemove', leftRangeThumbMouseMoveHandler);
+    document.removeEventListener('mouseup', leftRangeThumbMouseUpHandler);
+    document.removeEventListener('touchmove', leftRangeThumbMouseMoveHandler);
+    document.removeEventListener('touchend', leftRangeThumbMouseUpHandler);
+    document.removeEventListener('mousemove', rightRangeThumbMouseMoveHandler);
+    document.removeEventListener('mouseup', rightRangeThumbMouseUpHandler);
+    document.removeEventListener('touchmove', rightRangeThumbMouseMoveHandler);
+    document.removeEventListener('touchend', rightRangeThumbMouseUpHandler);
+  }
+});
+
 onMounted(() => {
   if (rangeRef.value) {
     const rangeRefClientRect = rangeRef.value?.getBoundingClientRect();
@@ -284,34 +307,49 @@ onMounted(() => {
 <style lang="scss" scoped>
 .range {
   position: relative;
-  width: 200px;
+  width: 100%;
   padding: 20px 0;
 
-  &__line {
-    background-color: grey;
-    width: 100%;
-    height: 2px;
+  &--disabled {
+    pointer-events: none;
+    opacity: 0.75;
   }
 
-  &__value {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 50%;
-    transform: translateY(-50%);
+  &__line {
+    background-color: #f2f2f2;
+    width: 100%;
     height: 2px;
-    background-color: blue;
+    border-radius: 2px;
+
+    &--value {
+      position: absolute;
+      left: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: #06c;
+    }
   }
+
+  //&__value {
+  //  position: absolute;
+  //  left: 0;
+  //  right: 0;
+  //  top: 50%;
+  //  transform: translateY(-50%);
+  //  height: 2px;
+  //  background-color: #06c;
+  //  border-radius: 2px;
+  //}
 
   &__thumb {
     position: absolute;
     z-index: 2;
     top: 50%;
-    background-color: blue;
-    width: 10px;
-    height: 10px;
+    background-color: #06c;
+    width: 4px;
+    height: 16px;
     transform: translate(-50%, -50%);
-    border-radius: 50%;
+    border-radius: 2px;
     cursor: pointer;
     user-select: none;
 

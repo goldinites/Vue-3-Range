@@ -20,10 +20,11 @@ import Range from "@/components/Range.vue";
 import {ref} from "vue";
 
 const min = 1;
-const max = 1000;
+const max = 100;
 const minValue = ref(min);
 const maxValue = ref(max);
 const step = 1;
+
 const updateValues = (values) => {
   // minValue.value = values.value;
   minValue.value = values.minValue;
@@ -33,6 +34,8 @@ const updateValues = (values) => {
 
 <style lang="scss" scoped>
 .app {
+  width: 340px;
+  margin: 0 auto;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -42,9 +45,9 @@ const updateValues = (values) => {
 
 .values {
   display: flex;
-  width: 200px;
   justify-content: space-between;
   margin-top: 25px;
+  width: 100%;
 }
 </style>
 

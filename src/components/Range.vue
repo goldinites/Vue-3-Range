@@ -18,7 +18,11 @@
         :class="{'range__thumb--elevated': minValue >= maxValue && lastThumb === 'left'}"
         @mousedown="leftRangeThumbMouseDownHandler"
         @touchstart="leftRangeThumbMouseDownHandler"
-    />
+    >
+      <div v-if="showLabels" class="range__thumb-label">
+        {{ minValue }}
+      </div>
+    </div>
     <div
         v-if="double"
         class="range__thumb range__thumb--right"
@@ -26,7 +30,11 @@
         :class="{'range__thumb--elevated': maxValue <= minValue && lastThumb === 'right'}"
         @mousedown="rightRangeThumbMouseDownHandler"
         @touchstart="rightRangeThumbMouseDownHandler"
-    />
+    >
+      <div v-if="showLabels" class="range__thumb-label">
+        {{ maxValue }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -61,6 +69,10 @@ const props = defineProps({
     default: true
   },
   disabled: {
+    type: Boolean,
+    default: false
+  },
+  showLabels: {
     type: Boolean,
     default: false
   }
@@ -330,17 +342,6 @@ onMounted(() => {
     }
   }
 
-  //&__value {
-  //  position: absolute;
-  //  left: 0;
-  //  right: 0;
-  //  top: 50%;
-  //  transform: translateY(-50%);
-  //  height: 2px;
-  //  background-color: #06c;
-  //  border-radius: 2px;
-  //}
-
   &__thumb {
     position: absolute;
     z-index: 2;
@@ -363,6 +364,11 @@ onMounted(() => {
 
     &--elevated {
       z-index: 5;
+    }
+
+    &-label {
+      transform: translate(-50%, -100%);
+      width: max-content;
     }
   }
 }

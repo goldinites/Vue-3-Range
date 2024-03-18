@@ -13,28 +13,20 @@
             `"
     />
     <div
-        class="range__thumb range__thumb--left"
+        class="range__thumb"
         :style="`left: ${leftThumbPosition}px;`"
         :class="{'range__thumb--elevated': minValue >= maxValue && lastThumb === 'left'}"
         @mousedown="leftRangeThumbMouseDownHandler"
         @touchstart="leftRangeThumbMouseDownHandler"
-    >
-      <div v-if="showLabels" class="range__thumb-label">
-        {{ minValue }}
-      </div>
-    </div>
+    />
     <div
         v-if="double"
-        class="range__thumb range__thumb--right"
+        class="range__thumb"
         :style="`left: ${rightThumbPosition}px;`"
         :class="{'range__thumb--elevated': maxValue <= minValue && lastThumb === 'right'}"
         @mousedown="rightRangeThumbMouseDownHandler"
         @touchstart="rightRangeThumbMouseDownHandler"
-    >
-      <div v-if="showLabels" class="range__thumb-label">
-        {{ maxValue }}
-      </div>
-    </div>
+    />
   </div>
 </template>
 
@@ -69,10 +61,6 @@ const props = defineProps({
     default: true
   },
   disabled: {
-    type: Boolean,
-    default: false
-  },
-  showLabels: {
     type: Boolean,
     default: false
   }
@@ -332,6 +320,7 @@ onMounted(() => {
     width: 100%;
     height: 2px;
     border-radius: 2px;
+    cursor: pointer;
 
     &--value {
       position: absolute;
@@ -344,7 +333,7 @@ onMounted(() => {
 
   &__thumb {
     position: absolute;
-    z-index: 2;
+    z-index: 1;
     top: 50%;
     background-color: #06c;
     width: 4px;
@@ -354,21 +343,8 @@ onMounted(() => {
     cursor: pointer;
     user-select: none;
 
-    &--left {
-      left: 0;
-    }
-
-    &--right {
-      right: 0;
-    }
-
     &--elevated {
-      z-index: 5;
-    }
-
-    &-label {
-      transform: translate(-50%, -100%);
-      width: max-content;
+      z-index: 2;
     }
   }
 }

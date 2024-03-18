@@ -6,7 +6,6 @@
       :min-value="+minValue"
       :max-value="+maxValue"
       :step="step"
-      :show-labels="true"
       @update="updateValues"
     />
     <div class="values">

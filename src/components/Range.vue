@@ -175,7 +175,7 @@ const rightRangeThumbMouseMoveHandler = (e) => {
 
   setMaxValue(value);
 
-  emitValues()
+  emitValues();
 }
 
 const leftRangeThumbMouseUpHandler = () => {
@@ -277,18 +277,18 @@ const emitValues = () => {
   }
 
   if (props.double) {
-    emit('update', double)
+    emit('update', double);
   } else {
-    emit('update', single)
+    emit('update', single);
   }
 }
 
 watch(() => props.minValue, (value) => {
-  setMinValue(value)
+  setMinValue(value);
 });
 
 watch(() => props.maxValue, (value) => {
-  setMaxValue(value)
+  setMaxValue(value);
 });
 
 watch(() => props.disabled, (value) => {
@@ -320,7 +320,7 @@ onMounted(() => {
 .range {
   position: relative;
   width: 100%;
-  padding: 20px 0;
+  padding: 7px 0;
 
   &--disabled {
     pointer-events: none;
